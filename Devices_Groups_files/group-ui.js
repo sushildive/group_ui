@@ -1,20 +1,3 @@
-var boxConfig = {
-	boxDim : {
-		maxHeight : 80
-	}
-};
-
-var gui = {
-	extendMe : function() {
-	},
-
-	restoreMe : function() {
-	},
-
-	toggleDisplay : function() {
-	}
-};
-
 /**
  * group box operations
  */
@@ -80,7 +63,7 @@ var boxOperations = {
 		return $('button[name="toggle-all-groups"]').hasClass('oab');
 	},
 
-	updateOCAllState2 : function() {
+	updateOCAllUI : function() {
 		var closedGroupsExists = ($('.expanding-box').not('.highlight').find('.expanding-box-handler').length > 0);
 		var state;
 		if (closedGroupsExists) {
@@ -114,7 +97,6 @@ var boxOperations = {
  })(jQuery);*/
 
 $(function() {
-	$.extend($('.expanding-box-handler'), boxConfig);
 	$(".expanding-box-dropdown").dynatree();
 	$(".demo").customScrollbar();
 	$(".demo").customScrollbar("resize");
@@ -123,8 +105,9 @@ $(function() {
 
 	$('.expanding-box-handler').click(function() {
 		$(this).toggleBasicGroupDisplay();
-		boxOperations.updateOCAllState2();
+		$(this).updateOCAllUI();
 	});
+	
 	$('.expanding-box-action').click(function() {
 		$(this).parent().parent().find('.expanding-box-handler').click();
 	});
