@@ -1,0 +1,96 @@
+{
+	"elementList": [
+		{
+			"currentMonthAvailability": "100",
+			"elementId": "000000004800",
+			"elementStatus": "G",
+			"lastMonthAvailability": "100"
+		}, {
+			"currentMonthAvailability": "100",
+			"elementId": "000000004806",
+			"elementStatus": "G",
+			"lastMonthAvailability": "100"
+		}, {
+			"currentMonthAvailability": "100",
+			"elementId": "000000004803",
+			"elementStatus": "G",
+			"lastMonthAvailability": "100"
+		}, {
+			"currentMonthAvailability": "100",
+			"elementId": "000000004811",
+			"elementStatus": "G",
+			"lastMonthAvailability": "100"
+		}, {
+			"currentMonthAvailability": "100",
+			"elementId": "000000004805",
+			"elementStatus": "R",
+			"lastMonthAvailability": "100"
+		}, {
+			"currentMonthAvailability": "100",
+			"elementId": "000000004811",
+			"elementStatus": "G",
+			"lastMonthAvailability": "100"
+		}, {
+			"currentMonthAvailability": "100",
+			"elementId": "000000006514",
+			"elementStatus": "G",
+			"lastMonthAvailability": "100"
+		}, {
+			"currentMonthAvailability": "100",
+			"elementId": "000000004808",
+			"elementStatus": "G",
+			"lastMonthAvailability": "100"
+		}
+	],
+	"elementNotinSN": null,
+	"serviceNowData": {
+		"elementVO": [
+			{
+				"currentMonthAvailability": "100",
+				"elementId": "000000004800",
+				"elementStatus": "G",
+				"lastMonthAvailability": "100"
+			}, {
+				"currentMonthAvailability": "100",
+				"elementId": "000000004806",
+				"elementStatus": "G",
+				"lastMonthAvailability": "100"
+			}, {
+				"currentMonthAvailability": "100",
+				"elementId": "000000004803",
+				"elementStatus": "G",
+				"lastMonthAvailability": "100"
+			}, {
+				"currentMonthAvailability": "100",
+				"elementId": "000000004811",
+				"elementStatus": "G",
+				"lastMonthAvailability": "100"
+			}, {
+				"currentMonthAvailability": "100",
+				"elementId": "000000004805",
+				"elementStatus": "R",
+				"lastMonthAvailability": "100"
+			}, {
+				"currentMonthAvailability": "100",
+				"elementId": "000000004811",
+				"elementStatus": "G",
+				"lastMonthAvailability": "100"
+			}, {
+				"currentMonthAvailability": "100",
+				"elementId": "000000006514",
+				"elementStatus": "G",
+				"lastMonthAvailability": "100"
+			}, {
+				"currentMonthAvailability": "100",
+				"elementId": "000000004808",
+				"elementStatus": "G",
+				"lastMonthAvailability": "100"
+			}
+		],
+		"errorCode": null,
+		"notAvailableID": null,
+		"responceCode": "OK"
+	},
+	"status": "ok",
+	"statusMessage": ""
+}

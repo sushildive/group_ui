@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html class=" js no-flexbox canvas canvastext no-webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients no-cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths" lang="en"><head>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<title>Devices Groups</title>
+		
+<script type="text/javascript">
+_CONTEXT_ROOT='/performance';
+</script>
+		<script>
+		var ERROR_GETTING_CHART_DATA='Error getting chart data, please try again later';
+		var ERROR_GET_AVAILABILITY='Error fetching availability status';
+		var ERROR_NO_METRICS_FOUND='No metrics found for this element';
+		var ERROR_NO_CHART_DATA='No chart data currently available';
+		var ERROR_ELMENTNAME_NOT_FOUND='No element name found in the page';
+		var OPEN_ALL='Open All';
+		var CLOSE_ALL='Close All';
+
+		var RESTORE_ALL='Restore All';
+		var EXPAND_ALL='Expand All';
+
+		var VIEW_ELEMENTS='Expand';
+		var HIDE_ELEMENTS='Collapse';
+		var LOADING='Loading...';
+		var CLICK_TO_CLOSE='Click to close';
+		
+	</script>
+	
+        	
+        
+
+<script src="Devices_Groups_files/global.js" type="text/javascript"></script>
+
+	<script src="Devices_Groups_files/jquery_002.js" type="text/javascript"></script>
+	<script src="Devices_Groups_files/jquery.js" type="text/javascript"></script>
+
+	<script src="Devices_Groups_files/multiple-accordion.js" type="text/javascript"></script>
+	<script src="Devices_Groups_files/config.js" type="text/javascript"></script>
+	<script src="Devices_Groups_files/engine.js" type="text/javascript"></script>
+	<!--
+	<script src="Devices_Groups_files/group-ui.js" type="text/javascript"></script>
+		<script src="../lib/jquery.custom-scrollbar.js" type="text/javascript"></script>
+		<script src="../lib/jquery.custom-scrollbar.ex.js" type="text/javascript"></script>
+		<script src="../lib/jquery.dynatree-1.2.4.js" type="text/javascript"></script>-->
+	
+
+	
+        	
+    
+
+<link href="Devices_Groups_files/global.css" media="screen" rel="stylesheet">
+
+	<link rel="stylesheet" type="text/css" media="screen" href="Devices_Groups_files/new_ui_styleguide.css">
+	<link rel="stylesheet" type="text/css" media="screen" href="Devices_Groups_files/jquery-ui.css">
+	<script type="text/javascript">
+
+		function submitSolutionGroupForm() {
+			$('#solutiongroupform').submit();
+		}
+
+		// To call an elementgroup action onclick of element.
+		function submitElementGroupForm(solutionID) {
+			$('#solutionID').val(solutionID);
+			$('#elementgroupform').submit();
+		}
+		$(document).ready(function (){
+			$(".elementWrapper li.element-list-item a").click(function(e){
+				$('#elementID').val($(this).attr('elementID'));
+				$('#groupId').val($(this).attr('groupId'));
+				$('#rootGroupId').val($(this).attr('rootGroupId'));
+				$('#solutionid').val($(this).attr('solutionid'));
+				$('#elementform').submit();
+			});
+			
+			var eleId='';
+			$('li li[elementid="'+eleId+'"]').parents('ul').css('display','block');
+			$('li[elementid="'+eleId+'"]').addClass('element-selected');				
+	
+		});
+	</script>
+	<script type="text/javascript">
+		 $(document).ready(function () {
+		    var v ='';
+		    if(v.length !='0' ){
+		    	$('.container-body').html('<div class="msg newCustomMessages msg-error"><p><i class="icon-exclamation-sign slvzr-last-child"></i>'+v +'</div>');
+		    }
+		    });	
+    </script>
+</head>
+<body>
+	<form action="/performance/fetchSolution.action" id="solutiongroupform" method="post">
+		<input name="ocnNumber" id="ocnNumber" type="hidden">
+	</form>
+	<form action="/performance/fetchElementgroup.action" id="elementgroupform" method="post">
+		<input name="solutionID" id="solutionID" type="hidden">
+	</form>
+	<form action="/performance/fetchElementView.action" id="elementform" method="post">
+		<input name="elementID" id="elementID" type="hidden"> 
+		<input name="groupId" id="groupId" type="hidden">
+		<input name="rootGroupId" id="rootGroupId" type="hidden">
+		<input name="solutionid" id="solutionid" type="hidden">
+    </form>
+	
+    	
+	
+
+<div class="navbar navbar-fixed-top navbar-colt">
+  <div class="navbar-inner">
+    <div class="container">
+      <div class="nav-collapse collapse">
+        <ul class="nav pull-right">
+          <li>
+            <a href="http://localhost:7001/mirage/responses/home">Home</a>
+          </li>
+          <li>
+            <a href="http://localhost:7001/mirage/responses/home/contacts">Contacts</a>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="user-profile-dropdown">
+              John Blake
+              <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li>
+                <a href="http://localhost:7001/mirage/responses/userprofile">
+                  <i class="icon-institutionalbar-profile"></i>
+                  My Profile
+                </a>
+              </li>
+              <li id="logoutNavigationMenuItem">
+                <a href="http://localhost:7001/mirage/responses/logout">
+                  <i class="icon-institutionalbar-logout"></i>
+                  Logout
+                </a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+        
+        	
+        
+
+<div class="site-header">
+  <div class="row site-header-row">
+    <div class="span7">
+      <h1 class="inner">
+        <a href="http://localhost:7001/mirage/responses/home" id="logo">
+          <div class="site-header-logo" title="Colt - smarter, faster, further"></div>
+        </a>
+        <div class="site-header-sublogo"></div>
+      </h1>
+    </div>
+  </div>
+</div>
+
+  
+  
+  	
+    
+  
+
+<ul class="nav primary-nav">
+  <li class="Performance">
+    <a class="" href="http://localhost:8180/performance">Performance</a>
+  </li>
+  <li class="Change">
+    <a class="" href="http://change_module/change">Change</a>
+  </li>
+  <li class="Users">
+    <a class="" href="http://localhost:7001/mirage/responses/users">Users</a>
+  </li>
+</ul>
+
+  
+  <ul class="nav secondary-nav">
+	<li>
+		<a href="javascript:submitSolutionGroupForm()" class="active">
+			Devices
+		</a>
+		<span class="divider">|</span>
+	</li>
+	<li><a href="http://localhost:8180/performance/fetchCapacitySolution.action">Capacity</a></li>
+ </ul>
+  <div class="container-body">
+    <div class="container-body-top">
+    	<ul class="nav tearnay-nav ">
+			<li>Browse Solutions:</li>
+			<li>
+				<a href="javascript:submitElementGroupForm('000000004889')">Groups</a>
+			</li>
+		</ul>
+      <h2 class="page-title">Argoneo Managed Hosting</h2>
+      <div class="page-toolbar">
+        <div class="page-toolbar-item"> <a href="#" class="btn-extend-all">Expand All</a> </div>
+        <div class="page-toolbar-item">
+          <button class="btn" name="toggle-all-groups">Open All</button>
+        </div>
+      	<div class="page-toolbar-item">
+	    	<strong>Key: </strong> <img src="Devices_Groups_files/ico_available.gif" alt="Available"> <span>Available</span>
+	        <img src="Devices_Groups_files/ico_warning.gif" alt="Warning"> <span>Warning</span>
+	        <img src="Devices_Groups_files/ico_not_available.gif" alt="Not Available"> <span>Unavailable</span>
+	        <img src="Devices_Groups_files/ico_availerror.gif" alt="Element Not Found"> <span>Element not found</span>
+	    </div>
+      </div>
+    </div>
+    <!-- GROUP DISPLAY START HERE -->
+    <ul class="group-solution-container">
+    	
+    		
+			
+				<li class="group-solution-item" groupid="group_1">
+				<div class="box border-box expanding-box">
+			
+
+			
+			
+			<!-- Non-multi-level groups -->
+	<!--     		<li class="group-solution-item" groupId="13"> -->
+	<!--         		<div class="box border-box expanding-box"> -->
+	          			<div class="expanding-box-handler"> 
+	          				<a href="#">
+	          					<span class="group-elements-count">6</span>
+	            				<h3 class="group-title"><span>Argoneo Citrix Services</span></h3>
+	            			</a>
+	          			</div>
+	          			<div class="expanding-box-dropdown scrollbar-container">
+		            		<div class="scrollbar">
+			              		<div class="track">
+			                		<div class="thumb">
+			                  			<div class="end"></div>
+			                		</div>
+			              		</div>
+		            		</div>
+		            		<div class="viewport">
+		              			<div class="overview">
+		                			<ul class="elements-list elementWrapper">
+		                				
+		                  					<li class="element-list-item" elementid="000000004808">
+
+												<a href="#" elementid="000000004808" groupid="group_1" solutionid="000000004889" rootgroupid="group_1">
+													iMS/MRI Prod/Pre prod SQL Server
+												</a>
+											</li>
+										
+		                  					<li class="element-list-item" elementid="000000004798">
+
+												<a href="#" elementid="000000004798" groupid="group_1" solutionid="000000004889" rootgroupid="group_1">
+													Citrix Server iMS/MRI/Office-1
+												</a>
+											</li>
+										
+		                  					<li class="element-list-item" elementid="000000004800">
+
+												<a href="#" elementid="000000004800" groupid="group_1" solutionid="000000004889" rootgroupid="group_1">
+													Citrix Server iMS/MRI/Office-2
+												</a>
+											</li>
+										
+		                  					<li class="element-list-item" elementid="000000004801">
+
+												<a href="#" elementid="000000004801" groupid="group_1" solutionid="000000004889" rootgroupid="group_1">
+													Citrix Server iMS/MRI/Office-3
+												</a>
+											</li>
+										
+		                  					<li class="element-list-item" elementid="000000004802">
+
+												<a href="#" elementid="000000004802" groupid="group_1" solutionid="000000004889" rootgroupid="group_1">
+													Citrix XenApp Controller
+												</a>
+											</li>
+										
+		                  					<li class="element-list-item" elementid="000000004803">
+
+												<a href="#" elementid="000000004803" groupid="group_1" solutionid="000000004889" rootgroupid="group_1">
+													Citrix Web Server
+												</a>
+											</li>
+										
+		                			</ul>
+		              			</div>
+		            		</div>
+	          			</div>
+	          			<div class="expanding-box-footer"> <a href="#" class="extend-box-action"></a> <a class="expanding-box-action">Expand</a> </div>
+	        		</div>
+	      		</li>
+			
+
+    	
+    		
+			
+				<li class="group-solution-item" groupid="group_2">
+				<div class="box border-box expanding-box">
+			
+
+			
+				<!-- Multi-level groups -->
+
+<!-- 				<li class="group-solution-item" groupId="10"> -->
+<!-- 			        <div class="box border-box expanding-box"> -->
+			          <div class="expanding-box-handler">
+			          	   <a href="#">
+	          					<span class="group-elements-count">8</span>
+	            				<h3 class="group-title"><span>Argoneo Sharepoint Services</span></h3>
+	            		   </a> 
+	            	  </div>
+			          <div class="expanding-box-dropdown scrollbar-container">
+			            <div class="scrollbar">
+			              <div class="track">
+			                <div class="thumb">
+			                  <div class="end"></div>
+			                </div>
+			              </div>
+			            </div>
+			            <div class="viewport">
+			              <div class="overview">
+			                <ul class="elementWrapper">
+			                	<!-- START : Now iterate over multi - level groups -->
+			                	
+
+
+
+
+
+
+
+
+
+
+
+
+	
+		<li class="groupTitleElement gTitleLevel1" subgroupid="subgroup_1"><a class="groupTitleLink">(1) Argoneo Sharepoint Services - Development</a>
+			<ul class="elements-list gTitleLevel1 closed" style="display:none;">
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000006514"><i class="showLink"></i>
+      					
+					
+
+
+						<a href="#" elementid="000000006514" groupid="subgroup_1" solutionid="000000004889" rootgroupid="group_2">
+							Sharepoint development server (Web Server)
+						</a>
+					</li>
+				
+
+				 
+			</ul>
+		</li>
+	
+		<li class="groupTitleElement gTitleLevel1" subgroupid="subgroup_2"><a class="groupTitleLink">(3) Argoneo Sharepoint Services - Staging</a>
+			<ul class="elements-list gTitleLevel1 closed" style="display:none;">
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004815"><i class="showLink"></i>
+      					
+					
+
+
+						<a href="#" elementid="000000004815" groupid="subgroup_2" solutionid="000000004889" rootgroupid="group_2">
+							Sharepoint application server (TEST)
+						</a>
+					</li>
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004810">
+      					
+					
+
+
+						<a href="#" elementid="000000004810" groupid="subgroup_2" solutionid="000000004889" rootgroupid="group_2">
+							Test Sharepoint SQL Server
+						</a>
+					</li>
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004812">
+      					
+					
+
+
+						<a href="#" elementid="000000004812" groupid="subgroup_2" solutionid="000000004889" rootgroupid="group_2">
+							Test Webserver Server
+						</a>
+					</li>
+				
+
+				 
+			</ul>
+		</li>
+	
+		<li class="groupTitleElement gTitleLevel1" subgroupid="subgroup_3"><a class="groupTitleLink">(4) Argoneo Sharepoint Services - Production</a>
+			<ul class="elements-list gTitleLevel1 closed" style="display:none;">
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004809"><i class="showLink"></i>
+      					
+					
+
+
+						<a href="#" elementid="000000004809" groupid="subgroup_3" solutionid="000000004889" rootgroupid="group_2">
+							SharePoint SQL Server
+						</a>
+					</li>
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004804">
+      					
+					
+
+
+						<a href="#" elementid="000000004804" groupid="subgroup_3" solutionid="000000004889" rootgroupid="group_2">
+							Sharepoint application server (PROD)
+						</a>
+					</li>
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004811">
+      					
+					
+
+
+						<a href="#" elementid="000000004811" groupid="subgroup_3" solutionid="000000004889" rootgroupid="group_2">
+							SharePoint WebServer
+						</a>
+					</li>
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004814">
+      					
+					
+
+
+						<a href="#" elementid="000000004814" groupid="subgroup_3" solutionid="000000004889" rootgroupid="group_2">
+							TMG Server - 1
+						</a>
+					</li>
+				
+
+				 
+			</ul>
+		</li>
+	
+
+			                	<!-- END : Now iterate over multi - level groups -->
+			                	<!-- START : List out direct elements in this groups if any-->
+			                	
+								<!-- END : List out direct elements in this groups -->
+			                </ul>
+			              </div>
+			            </div>
+			            <div class="scrollbar_h">
+			              <div class="track_h">
+			                <div class="thumb_h">
+			                  <div class="end_h"></div>
+			                </div>
+			              </div>
+			            </div>
+			          </div>
+			          <div class="expanding-box-footer"> <a href="#" class="extend-box-action"></a> <a class="expanding-box-action">Expand</a> </div>
+			        </div>
+			     </li>
+			
+			
+
+    	
+    		
+			
+				<li class="group-solution-item" groupid="group_3">
+				<div class="box border-box expanding-box">
+			
+
+			
+				<!-- Multi-level groups -->
+
+<!-- 				<li class="group-solution-item" groupId="10"> -->
+<!-- 			        <div class="box border-box expanding-box"> -->
+			          <div class="expanding-box-handler">
+			          	   <a href="#">
+	          					<span class="group-elements-count">5</span>
+	            				<h3 class="group-title"><span>Argoneo Backend Services</span></h3>
+	            		   </a> 
+	            	  </div>
+			          <div class="expanding-box-dropdown scrollbar-container">
+			            <div class="scrollbar">
+			              <div class="track">
+			                <div class="thumb">
+			                  <div class="end"></div>
+			                </div>
+			              </div>
+			            </div>
+			            <div class="viewport">
+			              <div class="overview">
+			                <ul class="elementWrapper">
+			                	<!-- START : Now iterate over multi - level groups -->
+			                	
+
+
+
+
+
+
+
+
+
+
+
+
+	
+		<li class="groupTitleElement gTitleLevel1" subgroupid="subgroup_1"><a class="groupTitleLink">(2) Argoneo Backend Services - ActiveDirectory/DNS</a>
+			<ul class="elements-list gTitleLevel1 closed" style="display:none;">
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004805"><i class="showLink"></i>
+      					
+					
+
+
+						<a href="#" elementid="000000004805" groupid="subgroup_1" solutionid="000000004889" rootgroupid="group_3">
+							Domain Controller argo.local
+						</a>
+					</li>
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004806">
+      					
+					
+
+
+						<a href="#" elementid="000000004806" groupid="subgroup_1" solutionid="000000004889" rootgroupid="group_3">
+							Domain Controller argo.local / Print Server argo.local
+						</a>
+					</li>
+				
+
+				 
+			</ul>
+		</li>
+	
+		<li class="groupTitleElement gTitleLevel1" subgroupid="subgroup_2"><a class="groupTitleLink">(1) Argoneo Backend Services - IMS</a>
+			<ul class="elements-list gTitleLevel1 closed" style="display:none;">
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004808"><i class="showLink"></i>
+      					
+					
+
+
+						<a href="#" elementid="000000004808" groupid="subgroup_2" solutionid="000000004889" rootgroupid="group_3">
+							iMS/MRI Prod/Pre prod SQL Server
+						</a>
+					</li>
+				
+
+				 
+			</ul>
+		</li>
+	
+		<li class="groupTitleElement gTitleLevel1" subgroupid="subgroup_3"><a class="groupTitleLink">(2) Argoneo Backend Services - Firewalls</a>
+			<ul class="elements-list gTitleLevel1 closed" style="display:none;">
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004721"><i class="showLink"></i>
+      					
+					
+
+
+						<a href="#" elementid="000000004721" groupid="subgroup_3" solutionid="000000004889" rootgroupid="group_3">
+							Perimeter Firewall-01
+						</a>
+					</li>
+				
+					
+      					
+			      		
+			      			<li class="element-list-item" elementid="000000004720">
+      					
+					
+
+
+						<a href="#" elementid="000000004720" groupid="subgroup_3" solutionid="000000004889" rootgroupid="group_3">
+							Perimeter Firewall-02
+						</a>
+					</li>
+				
+
+				 
+			</ul>
+		</li>
+	
+
+			                	<!-- END : Now iterate over multi - level groups -->
+			                	<!-- START : List out direct elements in this groups if any-->
+			                	
+								<!-- END : List out direct elements in this groups -->
+			                </ul>
+			              </div>
+			            </div>
+			            <div class="scrollbar_h">
+			              <div class="track_h">
+			                <div class="thumb_h">
+			                  <div class="end_h"></div>
+			                </div>
+			              </div>
+			            </div>
+			          </div>
+			          <div class="expanding-box-footer"> <a href="#" class="extend-box-action"></a> <a class="expanding-box-action">Expand</a> </div>
+			        </div>
+			     </li>
+			
+			
+
+    	
+    		
+			
+				<li class="group-solution-item" groupid="group_4">
+				<div class="box border-box expanding-box">
+			
+
+			
+			
+			<!-- Non-multi-level groups -->
+	<!--     		<li class="group-solution-item" groupId="13"> -->
+	<!--         		<div class="box border-box expanding-box"> -->
+	          			<div class="expanding-box-handler"> 
+	          				<a href="#">
+	          					<span class="group-elements-count">1</span>
+	            				<h3 class="group-title"><span>Argoneo File Services</span></h3>
+	            			</a>
+	          			</div>
+	          			<div class="expanding-box-dropdown scrollbar-container">
+		            		<div class="scrollbar">
+			              		<div class="track">
+			                		<div class="thumb">
+			                  			<div class="end"></div>
+			                		</div>
+			              		</div>
+		            		</div>
+		            		<div class="viewport">
+		              			<div class="overview">
+		                			<ul class="elements-list elementWrapper">
+		                				
+		                  					<li class="element-list-item" elementid="000000004816">
+
+												<a href="#" elementid="000000004816" groupid="group_4" solutionid="000000004889" rootgroupid="group_4">
+													File Server
+												</a>
+											</li>
+										
+		                			</ul>
+		              			</div>
+		            		</div>
+	          			</div>
+	          			<div class="expanding-box-footer"> <a href="#" class="extend-box-action"></a> <a class="expanding-box-action">Expand</a> </div>
+	        		</div>
+	      		</li><li class="row-end"></li>
+			
+
+    	
+    </ul>
+    <!-- GROUP DISPLAY ENDS HERE !!-->
+  </div>
+  
+		
+ 
+
+<footer>
+  <div class="site-footer site-footer-ext">
+    <div class="inner">
+      <ul class="horizontal">
+        <li>
+          <a class="new-window" href="http://www.colt.net/uk/en/terms-of-use/index.htm" title="KVH Terms and Conditions/AUP">KVH Terms and Conditions/AUP</a>
+        </li>
+        <li>
+          <a class="new-window" href="http://www.colt.net/uk/en/colt-code-of-business-conduct/index.htm" title="KVH Colt Code of Business Conduct">KVH Colt Code of Business Conduct</a>
+        </li>
+        <li>
+          <a class="new-window" href="http://www.colt.net/uk/en/data-privacy-statement/index.htm" title="KVH Data Privacy Statement">KVH Data Privacy Statement</a>
+        </li>
+        <li>
+          <a class="new-window" href="http://www.colt.net/uk/en/accessibility/index.htm" title="KVH Accessibility">KVH Accessibility</a>
+        </li>
+        <li>
+          <a class="new-window" href="http://www.colt.net/uk/en/Colt-Group-of-Companies/index.htm" title="KVH Group of Companies">KVH Group of Companies</a>
+        </li>
+      </ul>
+    </div>
+    <p class="copyright">
+      © 2013 Colt Technology Services Group Limited. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+</div>
+
+
+</body></html>
