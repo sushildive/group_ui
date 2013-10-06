@@ -49,8 +49,8 @@ var boxOperations = {
 	closeDown : function() {
 		$(this).slideUp();
 	},
-	
-	toggleBasicGroupDisplay : function () {
+
+	toggleBasicGroupDisplay : function() {
 		var myDad = $(this).parent();
 		var targetObject = myDad.find('.expanding-box-dropdown');
 		if (myDad.hasClass('highlight')) {
@@ -63,13 +63,23 @@ var boxOperations = {
 	}
 };
 
+/*
+(function($) {
+	$.fn.groupUI = function() {
+	};
+})(jQuery);*/
+
 $(function() {
 	$.extend($('.expanding-box-handler'), boxConfig);
 	$(".expanding-box-dropdown").dynatree();
 	$(".demo").customScrollbar();
 	$(".demo").customScrollbar("resize");
 	jQuery.fn.extend(boxOperations);
+
 	$('.expanding-box-handler').click(function() {
 		$(this).toggleBasicGroupDisplay();
+	});
+	$('.expanding-box-action').click(function() {
+		$(this).parent().parent().find('.expanding-box-handler').click();
 	});
 });
