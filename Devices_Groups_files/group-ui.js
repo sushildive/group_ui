@@ -15,7 +15,6 @@ var boxOperations = {
 	 * b) scrolling do not appears if height is less than threshold height.
 	 */
 	resizeMin : function() {
-		alert('resizeMax yet to implement');
 	},
 
 	/**
@@ -35,13 +34,18 @@ var boxOperations = {
 	toggleBasicGroupDisplay : function() {
 		var myDad = $(this).parent();
 		var targetObject = myDad.find('.expanding-box-dropdown');
+		var myHeight;
 		if (myDad.hasClass('highlight')) {
 			targetObject.closeDown();
 			myDad.removeClass('highlight');
+			myHeight = 0;
 		} else {
 			targetObject.openUp();
 			myDad.addClass('highlight');
+			myHeight = $(targetObject).find('.dynatree-container').height();
 		}
+		targetObject.height(myHeight);
+		targetObject.customScrollbar("resize");
 	},
 
 	toggleAllGroupDisplay : function() {
@@ -98,8 +102,8 @@ var boxOperations = {
 
 $(function() {
 	$(".expanding-box-dropdown").dynatree();
-	$(".demo").customScrollbar();
-	$(".demo").customScrollbar("resize");
+	$(".expanding-box-dropdown").customScrollbar();
+	$(".expanding-box-dropdown").customScrollbar("resize");
 
 	jQuery.fn.extend(boxOperations);
 
@@ -107,7 +111,7 @@ $(function() {
 		$(this).toggleBasicGroupDisplay();
 		$(this).updateOCAllUI();
 	});
-	
+
 	$('.expanding-box-action').click(function() {
 		$(this).parent().parent().find('.expanding-box-handler').click();
 	});
