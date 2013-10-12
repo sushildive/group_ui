@@ -1,3 +1,70 @@
+( function($) {
+		$.fn.groupUI = function(options) {
+			var defaultSettings = {
+				boxHeight : 150,
+				onBoxStateChange : null,
+				onBoxSizeChange : null
+
+			};
+
+			var settings = $.extend(defaultSettings, options);
+
+			return this.each(function() {
+				var boxComponent = {
+					root : $(this),
+					primaryHandler : $(this).find('.expanding-box-handler'),
+					secondaryHandler : $(this).find('.expanding-box-action'),
+					contentHolder : $(this).find('.expanding-box-dropdown')
+				};
+
+				$(this).find('.expanding-box-dropdown').dynatree({
+					onExpand : function(flag, node) {
+						resizeBox(flag, node, boxComponent);
+					}
+				});
+				// init scrollbar, dynatree
+				$(this).find('.expanding-box-dropdown').customScrollbar();
+				$(this).find('.expanding-box-handler').click(function() {
+					toggleBox(boxComponent);
+				});
+
+				$(this).find('.expanding-box-action').click(function() {
+					// click to primary box handler
+					boxComponent.primaryHandler.click();
+				});
+			});
+
+			function toggleBox(boxObject) {
+				var myDad = boxObject.root;
+				var targetObject = boxObject.contentHolder;
+				var myHeight;
+				if (myDad.hasClass('highlight')) {
+					targetObject.slideUp();
+					myDad.removeClass('highlight');
+					myHeight = 0;
+				} else {
+					targetObject.slideDown();
+					myDad.addClass('highlight');
+					myHeight = $(targetObject).find('.dynatree-container').height();
+				}
+				targetObject.height(myHeight);
+				targetObject.customScrollbar("resize");
+
+				if (settings.onBoxStateChange) {
+					settings.onBoxStateChange.call();
+				}
+			}
+
+			function resizeBox(flag, node, boxObject) {
+				// TODO implement box resize code
+				if (settings.onBoxSizeChange) {
+					settings.onBoxSizeChange.call();
+				}
+			}
+
+		};
+
+	}(jQuery));
 /**
  * group box operations
  */
@@ -17,37 +84,6 @@ var boxOperations = {
 	resizeMin : function() {
 	},
 
-	/**
-	 * Show group box
-	 */
-	openUp : function() {
-		$(this).slideDown();
-	},
-
-	/**
-	 * Hide group box
-	 */
-	closeDown : function() {
-		$(this).slideUp();
-	},
-
-	toggleBasicGroupDisplay : function() {
-		var myDad = $(this).parent();
-		var targetObject = myDad.find('.expanding-box-dropdown');
-		var myHeight;
-		if (myDad.hasClass('highlight')) {
-			targetObject.closeDown();
-			myDad.removeClass('highlight');
-			myHeight = 0;
-		} else {
-			targetObject.openUp();
-			myDad.addClass('highlight');
-			myHeight = $(targetObject).find('.dynatree-container').height();
-		}
-		targetObject.height(myHeight);
-		targetObject.customScrollbar("resize");
-	},
-
 	toggleAllGroupDisplay : function() {
 		var state;
 		if (boxOperations.isOpenAll()) {
@@ -60,7 +96,7 @@ var boxOperations = {
 			state = 'oab';
 		}
 
-		$(this).updateOCAllState(state);
+		boxOperations.updateOCAllState(state);
 	},
 
 	isOpenAll : function() {
@@ -76,7 +112,7 @@ var boxOperations = {
 			state = 'cab';
 		}
 
-		$(this).updateOCAllState(state);
+		boxOperations.updateOCAllState(state);
 	},
 
 	updateOCAllState : function(state) {
@@ -94,29 +130,10 @@ var boxOperations = {
 	}
 };
 
-/*
- (function($) {
- $.fn.groupUI = function() {
- };
- })(jQuery);*/
-
 $(function() {
-	$(".expanding-box-dropdown").dynatree();
-	$(".expanding-box-dropdown").customScrollbar();
-	$(".expanding-box-dropdown").customScrollbar("resize");
-
-	jQuery.fn.extend(boxOperations);
-
-	$('.expanding-box-handler').click(function() {
-		$(this).toggleBasicGroupDisplay();
-		$(this).updateOCAllUI();
-	});
-
-	$('.expanding-box-action').click(function() {
-		$(this).parent().parent().find('.expanding-box-handler').click();
-	});
-
-	$('button[name="toggle-all-groups"]').click(function() {
-		$(this).toggleAllGroupDisplay();
+	$('.expanding-box').groupUI({
+		onBoxStateChange : function() {
+			boxOperations.updateOCAllUI();
+		}
 	});
 });
