@@ -1,5 +1,5 @@
 ( function($) {
-		$.fn.groupUI = function(options) {
+		$.fn.groupUI = function(options, args) {
 			var defaultSettings = {
 				boxHeight : 150,
 				onBoxStateChange : null,
@@ -15,7 +15,7 @@
 				this.primaryHandler = $(ele).find('.expanding-box-handler');
 				this.secondaryHandler = $(ele).find('.expanding-box-action');
 				this.contentHolder = $(ele).find('.expanding-box-dropdown');
-				this.root.data("groupBox", this);
+				this.root.data('groupBox', this);
 				$(ele).find('.expanding-box-dropdown').dynatree({
 					onExpand : function(flag, node) {
 						resizeBox(flag, node, boxComponent);
@@ -52,19 +52,61 @@
 					targetObject.height(myHeight);
 					targetObject.customScrollbar("resize");
 
+					// update global open/close button
 					if (settings.onBoxStateChange) {
 						settings.onBoxStateChange.call();
+					}
+					// update global extend/restore icon
+					if (settings.onBoxSizeChange) {
+						settings.onBoxSizeChange.call();
 					}
 				},
 				openMaximized : function() {
 					// TODO implement
 					console.log('openMaximized not yet implemented');
-					console.log(this);
+					/*
+					 * Steps:
+					 * 1. expand all the nodes
+					 * 2. set box height
+					 * 3. open box
+					 * 4. update open/close button state
+					 * 5. update restore/extend icon
+					 * 6. update global restore/exend icon
+					 */
 				},
+
 				closeMinimized : function() {
 					// TODO implement
 					console.log('closeMinimized not yet implemented');
-					console.log(this);
+					/*
+					 * Steps:
+					 * 1. close all the nodes
+					 * 2. set box height
+					 * 3. remove restore/extend icon
+					 * 4. update global restore/exend icon
+					 * 5. update open/close button state
+					 * 6. close box
+					 */
+				},
+
+				maximize : function() {
+					/*
+					 * Steps:
+					 * 1. change height
+					 * 2. resize scrollbar
+					 * 3. change restore/extend icon
+					 * 4. change global restore/extend icon
+					 */
+				},
+
+				restore : function() {
+					/*
+					 * Steps:
+					 * 1. change height
+					 * 2. resize the scrollbars
+					 * 3. change restore/extend icon
+					 * 4. change global restore/extend icon
+					 */
 				}
 			};
 
@@ -72,7 +114,7 @@
 				if (options == undefined)
 					options = defaultSettings;
 				if ( typeof (options) == "string") {
-					var gb = $(this).data("groupbox");
+					var gb = $(this).data('groupBox');
 					if (gb)
 						gb[options](args);
 				} else if ( typeof (options) == "object") {
@@ -190,7 +232,6 @@ var boxOperations = {
 	},
 
 	updateOCAllState : function(state) {
-
 		var oldCls;
 		var newBtnLbl;
 		if (state == 'cab') {
@@ -208,10 +249,20 @@ $(function() {
 	$('.expanding-box').groupUI({
 		onBoxStateChange : function() {
 			boxOperations.updateOCAllUI();
+		},
+
+		onBoxSizeChange : function() {
+			// TODO implement box size changed
 		}
 	});
+
 	$('button[name="toggle-all-groups"]').click(function() {
-		$('.expanding-box').groupUI('openMaximized');
+		if ($(this).hasClass('oab')) {
+			$('.expanding-box').groupUI('openMaximized');
+		} else if ($(this).hasClass('cab')) {
+			$('.expanding-box').groupUI('closeMinimized');
+		}
+		// TODO this should lead to toggle of the button state
 	});
 });
 
