@@ -3,7 +3,8 @@
 			var defaultSettings = {
 				boxHeight : 150,
 				onBoxStateChange : null,
-				onBoxSizeChange : null
+				onBoxSizeChange : null,
+				fetchStatus : null
 			};
 
 			var settings = $.extend(defaultSettings, options);
@@ -15,27 +16,26 @@
 				this.secondaryHandler = $(this.root).find('.expanding-box-action');
 				this.contentHolder = $(this.root).find('.expanding-box-dropdown');
 				this.root.data('groupBox', this);
+				var _this = this;
 				// init dynatree
-				$(this.root).find('.expanding-box-dropdown').dynatree({
+				$(_this.contentHolder).dynatree({
 					onExpand : function(flag, node) {
-						resizeBox(flag, node, boxComponent);
+						resizeBox.call(_this, flag, node);
 					}
 				});
 
-				// init scrollbar 
-				var _this = this;
-				$(_this.root).find('.expanding-box-dropdown').customScrollbar();
+				// init scrollbar
+				$(_this.contentHolder).customScrollbar();
 
-				// primary open/close group handler 
-				$(_this.root).find('.expanding-box-handler').click(function() {
-					console.log(this);
+				// primary open/close group handler
+				$(_this.primaryHandler).click(function() {
 					_this.toggleBox();
 				});
 
 				// footer open/close button handler
-				$(_this.root).find('.expanding-box-action').click(function() {
+				$(_this.secondaryHandler).click(function() {
 					// click to primary box handler
-					boxComponent.primaryHandler.click();
+					_this.primaryHandler.click();
 				});
 
 				// footer extend/restore handler
@@ -49,30 +49,32 @@
 					var myDad = this.root;
 					var targetObject = this.contentHolder;
 					var myHeight;
+
 					if (myDad.hasClass('highlight')) {
 						targetObject.slideUp();
-						myDad.removeClass('highlight');
 						myHeight = 0;
+						dehighlightBox.call(this);
 					} else {
+						toggleAllNodes.call(this, false);
 						targetObject.slideDown();
-						myDad.addClass('highlight');
-						myHeight = $(targetObject).find('.dynatree-container').height();
+						myHeight = this.minimumGroupHeight();
+						highlightBox.call(this);
 					}
 					targetObject.height(myHeight);
 					targetObject.customScrollbar("resize");
 
+					// invoke callbacks
 					// update global open/close button
-					if (settings.onBoxStateChange) {
-						settings.onBoxStateChange.call();
+					if (this.options.onBoxStateChange) {
+						this.options.onBoxStateChange.call();
 					}
 					// update global extend/restore icon
-					if (settings.onBoxSizeChange) {
-						settings.onBoxSizeChange.call();
+					if (this.options.onBoxSizeChange) {
+						this.options.onBoxSizeChange.call();
 					}
 				},
+
 				openMaximized : function() {
-					// TODO implement
-					console.log('openMaximized not yet implemented');
 					/*
 					 * Steps:
 					 * 1. expand all the nodes
@@ -82,6 +84,23 @@
 					 * 5. update restore/extend icon
 					 * 6. update global restore/exend icon
 					 */
+					console.log('openMaximized not yet implemented');
+
+					// open box
+					if (!this.isOpened()) {
+						this.contentHolder.slideDown();
+					}
+
+					// expand all tree nodes
+					toggleAllNodes.call(this, true);
+					// set box height
+
+					if (!this.isOpened()) {
+						var myHieght = this.minimumGroupHeight();
+						this.contentHolder.height(myHieght);
+						$(this.contentHolder).customScrollbar("resize");
+					}
+					highlightBox.call(this);
 				},
 
 				closeMinimized : function() {
@@ -96,6 +115,13 @@
 					 * 5. update open/close button state
 					 * 6. close box
 					 */
+
+					dehighlightBox.call(this);
+					toggleAllNodes.call(this, false);
+					var myHieght = this.minimumGroupHeight();
+					this.contentHolder.height(myHieght);
+					$(this.contentHolder).customScrollbar("resize");
+					this.contentHolder.slideUp();
 				},
 
 				maximize : function() {
@@ -116,8 +142,39 @@
 					 * 3. change restore/extend icon
 					 * 4. change global restore/extend icon
 					 */
+				},
+
+				isOpened : function() {
+					return this.root.hasClass('highlight');
+				},
+
+				minimumGroupHeight : function() {
+					var myActualHeight = this.contentHolder.find('.dynatree-container').height() + 30;
+					var myHieght = this.options.boxHeight >= myActualHeight ? myActualHeight : this.options.boxHeight;
+					return myHieght;
 				}
 			};
+
+			function highlightBox() {
+				this.root.addClass('highlight');
+				this.secondaryHandler.text('Collapse');
+			};
+
+			function dehighlightBox() {
+				this.root.removeClass('highlight');
+				this.secondaryHandler.text('Expand');
+			};
+
+			function toggleAllNodes(flag) {
+				/*
+				 $("#tree").dynatree("getRoot").visit(function(node) {
+				 node.expand(true);
+				 });*/
+
+				this.contentHolder.dynatree('getRoot').visit(function(node) {
+					node.expand(flag);
+				});
+			}
 
 			return this.each(function() {
 				if (options == undefined)
@@ -131,34 +188,12 @@
 					new GroupBox(options, $(this));
 				} else
 					throw "Invalid type of options";
-
 			});
 
-			function toggleBox(boxObject) {
-				var myDad = boxObject.root;
-				var targetObject = boxObject.contentHolder;
-				var myHeight;
-				if (myDad.hasClass('highlight')) {
-					targetObject.slideUp();
-					myDad.removeClass('highlight');
-					myHeight = 0;
-				} else {
-					targetObject.slideDown();
-					myDad.addClass('highlight');
-					myHeight = $(targetObject).find('.dynatree-container').height();
-				}
-				targetObject.height(myHeight);
-				targetObject.customScrollbar("resize");
-
-				if (settings.onBoxStateChange) {
-					settings.onBoxStateChange.call();
-				}
-			}
-
-			function resizeBox(boxObject) {
+			function resizeBox(flag, node) {
 				// TODO implement box resize code
-				if (settings.onBoxSizeChange) {
-					settings.onBoxSizeChange.call();
+				if (this.options.onBoxSizeChange) {
+					this.options.onBoxSizeChange.call();
 				}
 			}
 
@@ -260,6 +295,7 @@ $(function() {
 		} else if ($(this).hasClass('cab')) {
 			$('.expanding-box').groupUI('closeMinimized');
 		}
+		GroupUIOps.updateOCAllUI();
 		// TODO this should lead to toggle of the button state
 	});
 });
