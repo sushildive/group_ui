@@ -4,7 +4,6 @@
 				boxHeight : 150,
 				onBoxStateChange : null,
 				onBoxSizeChange : null
-
 			};
 
 			var settings = $.extend(defaultSettings, options);
@@ -12,26 +11,36 @@
 			var GroupBox = function(opts, ele) {
 				this.options = opts;
 				this.root = $(ele);
-				this.primaryHandler = $(ele).find('.expanding-box-handler');
-				this.secondaryHandler = $(ele).find('.expanding-box-action');
-				this.contentHolder = $(ele).find('.expanding-box-dropdown');
+				this.primaryHandler = $(this.root).find('.expanding-box-handler');
+				this.secondaryHandler = $(this.root).find('.expanding-box-action');
+				this.contentHolder = $(this.root).find('.expanding-box-dropdown');
 				this.root.data('groupBox', this);
-				$(ele).find('.expanding-box-dropdown').dynatree({
+				// init dynatree
+				$(this.root).find('.expanding-box-dropdown').dynatree({
 					onExpand : function(flag, node) {
 						resizeBox(flag, node, boxComponent);
 					}
 				});
-				// init scrollbar, dynatree
+
+				// init scrollbar 
 				var _this = this;
-				$(ele).find('.expanding-box-dropdown').customScrollbar();
-				$(ele).find('.expanding-box-handler').click(function() {
+				$(_this.root).find('.expanding-box-dropdown').customScrollbar();
+
+				// primary open/close group handler 
+				$(_this.root).find('.expanding-box-handler').click(function() {
 					console.log(this);
 					_this.toggleBox();
 				});
 
-				$(ele).find('.expanding-box-action').click(function() {
+				// footer open/close button handler
+				$(_this.root).find('.expanding-box-action').click(function() {
 					// click to primary box handler
 					boxComponent.primaryHandler.click();
+				});
+
+				// footer extend/restore handler
+				$(_this.root).find('.extend-box-action').click(function() {
+					console.log('not yet implemented');
 				});
 			};
 
@@ -164,17 +173,6 @@
 
 		};
 
-		$.fn.groupUI.openMaximized = function() {
-			// TODO implement open all feature
-			console.log('openMaximized not yet implemented');
-			console.log(this);
-		};
-
-		$.fn.groupUI.closeMinimized = function() {
-			// TODO implement close all
-			console.log('closeMinimized not yet implemented');
-		};
-
 		/*
 		 $("#tree").dynatree("getRoot").visit(function(node) {
 		 node.expand(true);
@@ -184,7 +182,7 @@
 /**
  * group box operations
  */
-var boxOperations = {
+var GroupUIOps = {
 	/**
 	 * change box height to max to remove scrollbars
 	 */
@@ -202,7 +200,7 @@ var boxOperations = {
 
 	toggleAllGroupDisplay : function() {
 		var state;
-		if (boxOperations.isOpenAll()) {
+		if (GroupUIOps.isOpenAll()) {
 			// open all
 			$('.expanding-box').not('.highlight').find('.expanding-box-handler').toggleBasicGroupDisplay();
 			state = 'cab';
@@ -212,7 +210,7 @@ var boxOperations = {
 			state = 'oab';
 		}
 
-		boxOperations.updateOCAllState(state);
+		GroupUIOps.updateOCAllState(state);
 	},
 
 	isOpenAll : function() {
@@ -228,7 +226,7 @@ var boxOperations = {
 			state = 'cab';
 		}
 
-		boxOperations.updateOCAllState(state);
+		GroupUIOps.updateOCAllState(state);
 	},
 
 	updateOCAllState : function(state) {
@@ -248,7 +246,7 @@ var boxOperations = {
 $(function() {
 	$('.expanding-box').groupUI({
 		onBoxStateChange : function() {
-			boxOperations.updateOCAllUI();
+			GroupUIOps.updateOCAllUI();
 		},
 
 		onBoxSizeChange : function() {
