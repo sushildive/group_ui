@@ -46,22 +46,20 @@
 
 			GroupBox.prototype = {
 				toggleBox : function() {
-					var myDad = this.root;
 					var targetObject = this.contentHolder;
-					var myHeight;
 
-					if (myDad.hasClass('highlight')) {
-						targetObject.slideUp();
-						myHeight = 0;
+					if (this.isOpened()) {
 						dehighlightBox.call(this);
-					} else {
 						toggleAllNodes.call(this, false);
+						targetObject.height(this.minimumGroupHeight());
+						targetObject.customScrollbar("resize");
+						targetObject.slideUp();
+					} else {
 						targetObject.slideDown();
-						myHeight = this.minimumGroupHeight();
+						targetObject.height(this.minimumGroupHeight());
+						targetObject.customScrollbar("resize");
 						highlightBox.call(this);
 					}
-					targetObject.height(myHeight);
-					targetObject.customScrollbar("resize");
 
 					// invoke callbacks
 					// update global open/close button
@@ -76,16 +74,14 @@
 
 				openMaximized : function() {
 					/*
-					 * Steps:
-					 * 1. expand all the nodes
-					 * 2. set box height
-					 * 3. open box
-					 * 4. update open/close button state
-					 * 5. update restore/extend icon
-					 * 6. update global restore/exend icon
-					 */
-					console.log('openMaximized not yet implemented');
-
+					* Steps:
+					* 1. expand all the nodes
+					* 2. set box height
+					* 3. open box
+					* 4. update open/close button state
+					* 5. update restore/extend icon
+					* 6. update global restore/exend icon
+					*/
 					// open box
 					if (!this.isOpened()) {
 						this.contentHolder.slideDown();
@@ -105,7 +101,6 @@
 
 				closeMinimized : function() {
 					// TODO implement
-					console.log('closeMinimized not yet implemented');
 					/*
 					 * Steps:
 					 * 1. close all the nodes
@@ -120,7 +115,7 @@
 					toggleAllNodes.call(this, false);
 					var myHieght = this.minimumGroupHeight();
 					this.contentHolder.height(myHieght);
-					$(this.contentHolder).customScrollbar("resize");
+					this.contentHolder.customScrollbar("resize");
 					this.contentHolder.slideUp();
 				},
 
@@ -149,7 +144,7 @@
 				},
 
 				minimumGroupHeight : function() {
-					var myActualHeight = this.contentHolder.find('.dynatree-container').height() + 30;
+					var myActualHeight = this.contentHolder.find('.dynatree-container').height() + 12;
 					var myHieght = this.options.boxHeight >= myActualHeight ? myActualHeight : this.options.boxHeight;
 					return myHieght;
 				}
@@ -299,4 +294,3 @@ $(function() {
 		// TODO this should lead to toggle of the button state
 	});
 });
-
