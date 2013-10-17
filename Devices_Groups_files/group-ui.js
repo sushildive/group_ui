@@ -49,7 +49,6 @@
 				// footer extend/restore handler
 				$(this.boxSizeHandler).click(function() {
 					_this.resizeBoxOnExtendRestore();
-					//setTimeout(function(){}, 50);
 					toggleExtendRestore.call(_this);
 
 					if (_this.options.onBoxSizeChange) {
@@ -102,12 +101,6 @@
 				},
 
 				openMaximized : function() {
-					/*
-					* TODO
-					* Steps:
-					* 4. update global restore/exend icon
-					* 5. update restore/extend icon
-					*/
 					// open box
 					if (!this.isOpened()) {
 						this.contentHolder.slideDown();
@@ -128,13 +121,6 @@
 				},
 
 				closeMinimized : function() {
-					/*
-					* TODO
-					* Steps:
-					* 3. remove restore/extend icon
-					* 4. update global restore/exend icon
-					*/
-
 					// remove restore/extend icon
 					dehighlightBox.call(this);
 					// collapse all tree nodes
@@ -215,7 +201,7 @@
 					 */
 					this.boxSizeHandler.removeClass('restoreEnabled').removeClass('extendEnabled');
 				} else if ((this.currentVisibleHeight() <= this.options.boxHeight && !this.contentHolder.find('.scroll-bar.vertical').is(':visible'))) {
-					//2. height is less than or equal to max and no scrollbars
+					//2. height is less than or equal to max allowed and no scrollbars
 					this.boxSizeHandler.removeClass('restoreEnabled').removeClass('extendEnabled');
 				} else if (this.contentHolder.find('.scroll-bar.vertical').is(':visible')) {
 					/*
