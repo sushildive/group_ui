@@ -1,7 +1,7 @@
 ( function($) {
 		$.fn.groupUI = function(options, args) {
 			var defaultSettings = {
-				boxHeight : 150,
+				boxHeight : 120,
 				onBoxStateChange : null,
 				onBoxSizeChange : null,
 				fetchStatus : null
@@ -74,13 +74,10 @@
 
 				openMaximized : function() {
 					/*
+					* TODO
 					* Steps:
-					* 1. expand all the nodes
-					* 2. set box height
-					* 3. open box
-					* 4. update open/close button state
+					* 4. update global restore/exend icon
 					* 5. update restore/extend icon
-					* 6. update global restore/exend icon
 					*/
 					// open box
 					if (!this.isOpened()) {
@@ -89,33 +86,34 @@
 
 					// expand all tree nodes
 					toggleAllNodes.call(this, true);
-					// set box height
 
 					if (!this.isOpened()) {
-						var myHieght = this.minimumGroupHeight();
-						this.contentHolder.height(myHieght);
+						// set box height
+						this.contentHolder.height(this.minimumGroupHeight());
+						// resize the scrollbar
 						$(this.contentHolder).customScrollbar("resize");
 					}
+					// add restore/extend icon
 					highlightBox.call(this);
 				},
 
 				closeMinimized : function() {
-					// TODO implement
 					/*
-					 * Steps:
-					 * 1. close all the nodes
-					 * 2. set box height
-					 * 3. remove restore/extend icon
-					 * 4. update global restore/exend icon
-					 * 5. update open/close button state
-					 * 6. close box
-					 */
+					* TODO
+					* Steps:
+					* 3. remove restore/extend icon
+					* 4. update global restore/exend icon
+					*/
 
+					// remove restore/extend icon
 					dehighlightBox.call(this);
+					// collapse all tree nodes
 					toggleAllNodes.call(this, false);
-					var myHieght = this.minimumGroupHeight();
-					this.contentHolder.height(myHieght);
+					// resize box
+					this.contentHolder.height(this.minimumGroupHeight());
+					// resize scrolling
 					this.contentHolder.customScrollbar("resize");
+					// close box
 					this.contentHolder.slideUp();
 				},
 
@@ -144,9 +142,16 @@
 				},
 
 				minimumGroupHeight : function() {
-					var myActualHeight = this.contentHolder.find('.dynatree-container').height() + 12;
+					var myActualHeight = this.contentHolder.find('.dynatree-container').height() + GroupConstants.HEIGHT_OFFSET;
 					var myHieght = this.options.boxHeight >= myActualHeight ? myActualHeight : this.options.boxHeight;
 					return myHieght;
+				},
+
+				maximumGroupHeight : function() {
+				},
+
+				currentVisibleHeight : function() {
+					return this.contentHolder.find('.viewport').height();
 				}
 			};
 
@@ -161,11 +166,6 @@
 			};
 
 			function toggleAllNodes(flag) {
-				/*
-				 $("#tree").dynatree("getRoot").visit(function(node) {
-				 node.expand(true);
-				 });*/
-
 				this.contentHolder.dynatree('getRoot').visit(function(node) {
 					node.expand(flag);
 				});
@@ -187,6 +187,19 @@
 
 			function resizeBox(flag, node) {
 				// TODO implement box resize code
+				var myNewHeight = this.currentVisibleHeight();
+				console.log('myNewHeight');
+				console.log(myNewHeight);
+
+				if (myNewHeight <= this.options.boxHeight) {
+					this.contentHolder.height(this.minimumGroupHeight());
+				}
+
+				this.contentHolder.customScrollbar("resize");
+				myNewHeight = this.currentVisibleHeight();
+				console.log('myNewHeight');
+				console.log(myNewHeight);
+
 				if (this.options.onBoxSizeChange) {
 					this.options.onBoxSizeChange.call();
 				}
@@ -271,6 +284,10 @@ var GroupUIOps = {
 		}
 		$('button[name="toggle-all-groups"]').removeClass(oldCls).addClass(state).text(newBtnLbl);
 	}
+};
+
+var GroupConstants = {
+	HEIGHT_OFFSET : 12
 };
 
 $(function() {
