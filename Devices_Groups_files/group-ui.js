@@ -1,5 +1,5 @@
 // TODO reset scrolling to top when opening the box
-
+// TODO match box height - some minor difference in the heights of 2 boxes when no initial scrolling
 ( function($) {
 		$.fn.groupUI = function(options, args) {
 			var defaultSettings = {
@@ -17,12 +17,17 @@
 				this.primaryHandler = $(this.root).find('.expanding-box-handler');
 				this.secondaryHandler = $(this.root).find('.expanding-box-action');
 				this.contentHolder = $(this.root).find('.expanding-box-dropdown');
+				this.boxSizeHandler = $(this.root).find('.extend-box-action');
 				this.root.data('groupBox', this);
 				var _this = this;
 				// init dynatree
 				$(_this.contentHolder).dynatree({
 					onExpand : function(flag, node) {
 						resizeBox.call(_this, flag, node);
+						toggleExtendRestore.call(_this);
+						if (_this.options.onBoxSizeChange) {
+							_this.options.onBoxSizeChange.call();
+						}
 					}
 				});
 
@@ -42,8 +47,14 @@
 				});
 
 				// footer extend/restore handler
-				$(_this.root).find('.extend-box-action').click(function() {
-					console.log('not yet implemented');
+				$(this.boxSizeHandler).click(function() {
+					_this.resizeBoxOnExtendRestore();
+					//setTimeout(function(){}, 50);
+					toggleExtendRestore.call(_this);
+
+					if (_this.options.onBoxSizeChange) {
+						_this.options.onBoxSizeChange.call();
+					}
 				});
 			};
 
@@ -54,7 +65,7 @@
 					if (this.isOpened()) {
 						dehighlightBox.call(this);
 						toggleAllNodes.call(this, false);
-						targetObject.height(this.minimumGroupHeight());
+						targetObject.height('auto');
 						targetObject.customScrollbar("resize");
 						targetObject.slideUp();
 					} else {
@@ -63,6 +74,8 @@
 						targetObject.customScrollbar("resize");
 						highlightBox.call(this);
 					}
+
+					toggleExtendRestore.call(this);
 
 					// invoke callbacks
 					// update global open/close button
@@ -73,6 +86,19 @@
 					if (this.options.onBoxSizeChange) {
 						this.options.onBoxSizeChange.call();
 					}
+				},
+
+				resizeBoxOnExtendRestore : function() {
+					var newHeight;
+					if (this.boxSizeHandler.hasClass('extendEnabled')) {
+						// increase size
+						newHeight = this.maximumGroupHeight();
+					} else if (this.boxSizeHandler.hasClass('restoreEnabled')) {
+						// decrease size
+						newHeight = this.minimumGroupHeight();
+					}
+					this.contentHolder.height(newHeight);
+					$(this.contentHolder).customScrollbar("resize");
 				},
 
 				openMaximized : function() {
@@ -98,6 +124,7 @@
 					}
 					// add restore/extend icon
 					highlightBox.call(this);
+					toggleExtendRestore.call(this);
 				},
 
 				closeMinimized : function() {
@@ -113,7 +140,7 @@
 					// collapse all tree nodes
 					toggleAllNodes.call(this, false);
 					// resize box
-					this.contentHolder.height(this.minimumGroupHeight());
+					this.contentHolder.height('auto');
 					// resize scrolling
 					this.contentHolder.customScrollbar("resize");
 					// close box
@@ -128,6 +155,10 @@
 					 * 3. change restore/extend icon
 					 * 4. change global restore/extend icon
 					 */
+					if (this.boxSizeHandler.hasClass('extendEnabled')) {
+						this.resizeBoxOnExtendRestore();
+						toggleExtendRestore.call(this);
+					}
 				},
 
 				restore : function() {
@@ -138,6 +169,10 @@
 					 * 3. change restore/extend icon
 					 * 4. change global restore/extend icon
 					 */
+					if (this.boxSizeHandler.hasClass('restoreEnabled')) {
+						this.resizeBoxOnExtendRestore();
+						toggleExtendRestore.call(this);
+					}
 				},
 
 				isOpened : function() {
@@ -151,7 +186,7 @@
 				},
 
 				maximumGroupHeight : function() {
-					// TODO remove this method if not required
+					return this.contentHolder.find('.dynatree-container').height() + GroupConstants.HEIGHT_OFFSET;
 				},
 
 				currentVisibleHeight : function() {
@@ -167,6 +202,38 @@
 			function dehighlightBox() {
 				this.root.removeClass('highlight');
 				this.secondaryHandler.text('Expand');
+			};
+
+			function toggleExtendRestore() {
+				console.log('toggling ex/re icon ' + this.root.hasClass('highlight'));
+				console.log(this);
+				if (!this.root.hasClass('highlight')) {
+					/*
+					 * Hide extend/restore in case of following scenarios:
+					 * 1. box closed
+					 */
+					this.boxSizeHandler.removeClass('restoreEnabled').removeClass('extendEnabled');
+					console.log('case 1');
+				} else if ((this.currentVisibleHeight() <= this.options.boxHeight && !this.contentHolder.find('.scroll-bar.vertical').is(':visible'))) {
+					//2. height is less than or equal to max and no scrollbars
+					this.boxSizeHandler.removeClass('restoreEnabled').removeClass('extendEnabled');
+					console.log('case 4');
+				} else if (this.contentHolder.find('.scroll-bar.vertical').is(':visible')) {
+					/*
+					 * Show extend icon in following scenarios:
+					 * 1. scrollbar is visible
+					 */
+					this.boxSizeHandler.removeClass('restoreEnabled').addClass('extendEnabled');
+					console.log('case 2');
+				} else if (this.currentVisibleHeight() > this.options.boxHeight && !this.contentHolder.find('.scroll-bar.vertical').is(':visible')) {
+					/*
+					 * Show restore icon in following scenarios:
+					 * 1. scrollbar is not visible
+					 * 2. height is more than max allowed height
+					 */
+					this.boxSizeHandler.removeClass('extendEnabled').addClass('restoreEnabled');
+					console.log('case 3');
+				}
 			};
 
 			function toggleAllNodes(flag) {
@@ -194,17 +261,15 @@
 			function resizeBox(flag, node) {
 				// TODO implement box resize code
 				var myNewHeight = this.currentVisibleHeight();
-				console.log('myNewHeight');
-				console.log(myNewHeight);
 
 				if (myNewHeight <= this.options.boxHeight) {
 					this.contentHolder.height(this.minimumGroupHeight());
+				} else {
+					this.contentHolder.height(this.maximumGroupHeight());
 				}
 
 				this.contentHolder.customScrollbar("resize");
 				myNewHeight = this.currentVisibleHeight();
-				console.log('myNewHeight');
-				console.log(myNewHeight);
 
 				if (this.options.onBoxSizeChange) {
 					this.options.onBoxSizeChange.call();
@@ -241,6 +306,30 @@ var GroupUIOps = {
 			newBtnLbl = 'Open All';
 		}
 		$('button[name="toggle-all-groups"]').removeClass(oldCls).addClass(state).text(newBtnLbl);
+	},
+
+	updateExtendRestoreState : function() {
+		var extendibleBoxExist = ($('.expanding-box').find('.extendEnabled').length > 0);
+		var restorableBoxExist = ($('.expanding-box').find('.restoreEnabled').length > 0);
+
+		var newBtnLbl;
+		var exReButton = $('a.btn-extend-all');
+		if (extendibleBoxExist) {
+			// few boxes exist which can be extended
+			exReButton.removeClass('restoreEnabled').addClass('extendEnabled');
+			newBtnLbl = 'Expand All';
+		} else if (restorableBoxExist) {
+			// few boxes exist which can be restored
+			exReButton.removeClass('extendEnabled').addClass('restoreEnabled');
+			newBtnLbl = 'Restore All';
+		} else {
+			exReButton.removeClass('extendEnabled').removeClass('restoreEnabled');
+			newBtnLbl = '';
+		}
+
+		if (newBtnLbl != '') {
+			exReButton.text(newBtnLbl);
+		}
 	}
 };
 
@@ -248,7 +337,6 @@ var GroupConstants = {
 	HEIGHT_OFFSET : 12,
 	OPEN_ALL_CLASS : 'oab',
 	CLOSE_ALL_CLASS : 'cab'
-
 };
 
 $(function() {
@@ -258,8 +346,10 @@ $(function() {
 		},
 
 		onBoxSizeChange : function() {
-			// TODO implement box size changed
-		}
+			GroupUIOps.updateExtendRestoreState();
+		},
+
+		boxHeight : 200
 	});
 
 	$('button[name="toggle-all-groups"]').click(function() {
@@ -269,6 +359,15 @@ $(function() {
 			$('.expanding-box').groupUI('closeMinimized');
 		}
 		GroupUIOps.updateOCAllUI();
-		// TODO this should lead to toggle of the button state
+		GroupUIOps.updateExtendRestoreState();
+	});
+
+	$('a.btn-extend-all').click(function() {
+		if ($(this).hasClass('extendEnabled')) {
+			$('.expanding-box').groupUI('maximize');
+		} else if ($(this).hasClass('restoreEnabled')) {
+			$('.expanding-box').groupUI('restore');
+		}
+		GroupUIOps.updateExtendRestoreState();
 	});
 });
