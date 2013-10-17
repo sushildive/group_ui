@@ -1,3 +1,5 @@
+// TODO reset scrolling to top when opening the box
+
 ( function($) {
 		$.fn.groupUI = function(options, args) {
 			var defaultSettings = {
@@ -33,6 +35,7 @@
 				});
 
 				// footer open/close button handler
+
 				$(_this.secondaryHandler).click(function() {
 					// click to primary box handler
 					_this.primaryHandler.click();
@@ -148,6 +151,7 @@
 				},
 
 				maximumGroupHeight : function() {
+					// TODO remove this method if not required
 				},
 
 				currentVisibleHeight : function() {
@@ -176,13 +180,15 @@
 					options = defaultSettings;
 				if ( typeof (options) == "string") {
 					var gb = $(this).data('groupBox');
-					if (gb)
+					if (gb) {
 						gb[options](args);
+					}
 				} else if ( typeof (options) == "object") {
 					options = $.extend(defaultSettings, options);
 					new GroupBox(options, $(this));
-				} else
+				} else {
 					throw "Invalid type of options";
+				}
 			});
 
 			function resizeBox(flag, node) {
@@ -205,68 +211,20 @@
 				}
 			}
 
-			function maximize(boxObject) {
-				//TODO implement extend logic here
-
-			}
-
-			function restore(boxObject) {
-				// TODO implement restore logic here
-			}
-
 		};
-
-		/*
-		 $("#tree").dynatree("getRoot").visit(function(node) {
-		 node.expand(true);
-		 });*/
 
 	}(jQuery));
 /**
  * group box operations
  */
 var GroupUIOps = {
-	/**
-	 * change box height to max to remove scrollbars
-	 */
-	resizeMax : function() {
-		alert('resizeMax yet to implement');
-	},
-
-	/**
-	 * change box height to max so that
-	 * a) scrolling appears if required
-	 * b) scrolling do not appears if height is less than threshold height.
-	 */
-	resizeMin : function() {
-	},
-
-	toggleAllGroupDisplay : function() {
-		var state;
-		if (GroupUIOps.isOpenAll()) {
-			// open all
-			$('.expanding-box').not('.highlight').find('.expanding-box-handler').toggleBasicGroupDisplay();
-			state = 'cab';
-		} else {
-			// close all
-			$('.expanding-box.highlight').find('.expanding-box-handler').toggleBasicGroupDisplay();
-			state = 'oab';
-		}
-
-		GroupUIOps.updateOCAllState(state);
-	},
-
-	isOpenAll : function() {
-		return $('button[name="toggle-all-groups"]').hasClass('oab');
-	},
-
 	updateOCAllUI : function() {
 		var closedGroupsExists = ($('.expanding-box').not('.highlight').find('.expanding-box-handler').length > 0);
 		var state;
 		if (closedGroupsExists) {
-			state = 'oab';
+			state = GroupConstants.OPEN_ALL_CLASS;
 		} else {
-			state = 'cab';
+			state = GroupConstants.CLOSE_ALL_CLASS;
 		}
 
 		GroupUIOps.updateOCAllState(state);
@@ -275,11 +233,11 @@ var GroupUIOps = {
 	updateOCAllState : function(state) {
 		var oldCls;
 		var newBtnLbl;
-		if (state == 'cab') {
-			oldCls = 'oab';
+		if (state == GroupConstants.CLOSE_ALL_CLASS) {
+			oldCls = GroupConstants.OPEN_ALL_CLASS;
 			newBtnLbl = 'Close All';
 		} else {
-			oldCls = 'cab';
+			oldCls = GroupConstants.CLOSE_ALL_CLASS;
 			newBtnLbl = 'Open All';
 		}
 		$('button[name="toggle-all-groups"]').removeClass(oldCls).addClass(state).text(newBtnLbl);
@@ -287,7 +245,10 @@ var GroupUIOps = {
 };
 
 var GroupConstants = {
-	HEIGHT_OFFSET : 12
+	HEIGHT_OFFSET : 12,
+	OPEN_ALL_CLASS : 'oab',
+	CLOSE_ALL_CLASS : 'cab'
+
 };
 
 $(function() {
@@ -302,9 +263,9 @@ $(function() {
 	});
 
 	$('button[name="toggle-all-groups"]').click(function() {
-		if ($(this).hasClass('oab')) {
+		if ($(this).hasClass(GroupConstants.OPEN_ALL_CLASS)) {
 			$('.expanding-box').groupUI('openMaximized');
-		} else if ($(this).hasClass('cab')) {
+		} else if ($(this).hasClass(GroupConstants.CLOSE_ALL_CLASS)) {
 			$('.expanding-box').groupUI('closeMinimized');
 		}
 		GroupUIOps.updateOCAllUI();
