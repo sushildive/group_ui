@@ -145,6 +145,7 @@
 					this.contentHolder.customScrollbar("resize");
 					// close box
 					this.contentHolder.slideUp();
+					toggleExtendRestore.call(this);
 				},
 
 				maximize : function() {
@@ -190,7 +191,9 @@
 				},
 
 				currentVisibleHeight : function() {
-					return this.contentHolder.find('.viewport').height();
+					var vpHeight = this.contentHolder.find('.viewport').height();
+					var contentHeight = this.maximumGroupHeight();
+					return vpHeight >= contentHeight ? contentHeight : vpHeight;
 				}
 			};
 
@@ -205,26 +208,21 @@
 			};
 
 			function toggleExtendRestore() {
-				console.log('toggling ex/re icon ' + this.root.hasClass('highlight'));
-				console.log(this);
-				if (!this.root.hasClass('highlight')) {
+				if (!this.isOpened()) {
 					/*
 					 * Hide extend/restore in case of following scenarios:
 					 * 1. box closed
 					 */
 					this.boxSizeHandler.removeClass('restoreEnabled').removeClass('extendEnabled');
-					console.log('case 1');
 				} else if ((this.currentVisibleHeight() <= this.options.boxHeight && !this.contentHolder.find('.scroll-bar.vertical').is(':visible'))) {
 					//2. height is less than or equal to max and no scrollbars
 					this.boxSizeHandler.removeClass('restoreEnabled').removeClass('extendEnabled');
-					console.log('case 4');
 				} else if (this.contentHolder.find('.scroll-bar.vertical').is(':visible')) {
 					/*
 					 * Show extend icon in following scenarios:
 					 * 1. scrollbar is visible
 					 */
 					this.boxSizeHandler.removeClass('restoreEnabled').addClass('extendEnabled');
-					console.log('case 2');
 				} else if (this.currentVisibleHeight() > this.options.boxHeight && !this.contentHolder.find('.scroll-bar.vertical').is(':visible')) {
 					/*
 					 * Show restore icon in following scenarios:
@@ -232,7 +230,6 @@
 					 * 2. height is more than max allowed height
 					 */
 					this.boxSizeHandler.removeClass('extendEnabled').addClass('restoreEnabled');
-					console.log('case 3');
 				}
 			};
 
@@ -259,17 +256,15 @@
 			});
 
 			function resizeBox(flag, node) {
-				// TODO implement box resize code
 				var myNewHeight = this.currentVisibleHeight();
 
 				if (myNewHeight <= this.options.boxHeight) {
 					this.contentHolder.height(this.minimumGroupHeight());
 				} else {
-					this.contentHolder.height(this.maximumGroupHeight());
+					this.contentHolder.height(myNewHeight);
 				}
 
 				this.contentHolder.customScrollbar("resize");
-				myNewHeight = this.currentVisibleHeight();
 
 				if (this.options.onBoxSizeChange) {
 					this.options.onBoxSizeChange.call();
