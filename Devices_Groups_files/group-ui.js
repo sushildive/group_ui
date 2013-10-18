@@ -185,12 +185,12 @@
 
 			function highlightBox() {
 				this.root.addClass('highlight');
-				this.secondaryHandler.text('Collapse');
+				this.secondaryHandler.text(GroupConstants.COLLAPSE);
 			};
 
 			function dehighlightBox() {
 				this.root.removeClass('highlight');
-				this.secondaryHandler.text('Expand');
+				this.secondaryHandler.text(GroupConstants.EXPAND);
 			};
 
 			function toggleExtendRestore() {
@@ -266,27 +266,20 @@
 var GroupUIOps = {
 	updateOCAllUI : function() {
 		var closedGroupsExists = ($('.expanding-box').not('.highlight').find('.expanding-box-handler').length > 0);
-		var state;
-		if (closedGroupsExists) {
-			state = GroupConstants.OPEN_ALL_CLASS;
-		} else {
-			state = GroupConstants.CLOSE_ALL_CLASS;
-		}
-
-		GroupUIOps.updateOCAllState(state);
-	},
-
-	updateOCAllState : function(state) {
+		var newCls;
 		var oldCls;
 		var newBtnLbl;
-		if (state == GroupConstants.CLOSE_ALL_CLASS) {
-			oldCls = GroupConstants.OPEN_ALL_CLASS;
-			newBtnLbl = 'Close All';
-		} else {
+		if (closedGroupsExists) {
+			newCls = GroupConstants.OPEN_ALL_CLASS;
 			oldCls = GroupConstants.CLOSE_ALL_CLASS;
-			newBtnLbl = 'Open All';
+			newBtnLbl = GroupConstants.OPEN_ALL;
+		} else {
+			newCls = GroupConstants.CLOSE_ALL_CLASS;
+			newBtnLbl = GroupConstants.CLOSE_ALL;
+			oldCls = GroupConstants.OPEN_ALL_CLASS;
 		}
-		$('button[name="toggle-all-groups"]').removeClass(oldCls).addClass(state).text(newBtnLbl);
+
+		$('button[name="toggle-all-groups"]').removeClass(oldCls).addClass(newCls).text(newBtnLbl);
 	},
 
 	updateExtendRestoreState : function() {
@@ -298,11 +291,11 @@ var GroupUIOps = {
 		if (extendibleBoxExist) {
 			// few boxes exist which can be extended
 			exReButton.removeClass('restoreEnabled').addClass('extendEnabled');
-			newBtnLbl = 'Expand All';
+			newBtnLbl = GroupConstants.MAXIMIZE_ALL;
 		} else if (restorableBoxExist) {
 			// few boxes exist which can be restored
 			exReButton.removeClass('extendEnabled').addClass('restoreEnabled');
-			newBtnLbl = 'Restore All';
+			newBtnLbl = GroupConstants.RESTORE_ALL;
 		} else {
 			exReButton.removeClass('extendEnabled').removeClass('restoreEnabled');
 			newBtnLbl = '';
@@ -317,7 +310,13 @@ var GroupUIOps = {
 var GroupConstants = {
 	HEIGHT_OFFSET : 12,
 	OPEN_ALL_CLASS : 'oab',
-	CLOSE_ALL_CLASS : 'cab'
+	CLOSE_ALL_CLASS : 'cab',
+	MAXIMIZE_ALL : 'Expand All',
+	RESTORE_ALL : 'Restore All',
+	OPEN_ALL : 'Open All',
+	CLOSE_ALL : 'Close All',
+	COLLAPSE : 'Collapse',
+	EXPAND : 'Expand'
 };
 
 $(function() {
