@@ -32,7 +32,9 @@
 				});
 
 				// init scrollbar
-				$(_this.contentHolder).customScrollbar();
+				$(_this.contentHolder).customScrollbar({
+					preventDefaultScroll : false
+				});
 
 				// primary open/close group handler
 				$(_this.primaryHandler).click(function() {
@@ -180,6 +182,19 @@
 					var vpHeight = this.contentHolder.find('.viewport').height();
 					var contentHeight = this.maximumGroupHeight();
 					return vpHeight >= contentHeight ? contentHeight : vpHeight;
+				},
+
+				autoOpen : function(elementId, rootGroupId, parentGroupId) {
+					//this.contentHolder.dynatree("getTree").activateKey(elementId);
+					var tree = this.contentHolder.dynatree("getTree");
+					var node = tree.getNodeByKey(elementId);
+
+					if (node != null) {
+						// open me
+						this.toggleBox();
+						node.activate();
+						this.contentHolder.customScrollbar('scrollTo', this.root.find('i[keyid="' + elementId + '"]').parent());
+					}
 				}
 			};
 
@@ -350,4 +365,6 @@ $(function() {
 		}
 		GroupUIOps.updateExtendRestoreState();
 	});
+
+	$('.expanding-box').groupUI('autoOpen', '000000004814');
 });
