@@ -1,4 +1,3 @@
-// TODO reset scrolling to top when opening the box
 // TODO match box height - some minor difference in the heights of 2 boxes when no initial scrolling
 ( function($) {
 		$.fn.groupUI = function(options, args) {
