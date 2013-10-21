@@ -6,7 +6,9 @@
 				boxHeight : 120,
 				onBoxStateChange : null,
 				onBoxSizeChange : null,
-				fetchStatus : null
+				fetchAvailability : null,
+				staticBox : false,
+				onSelectElement : null
 			};
 
 			var settings = $.extend(defaultSettings, options);
@@ -24,9 +26,17 @@
 				$(_this.contentHolder).dynatree({
 					onExpand : function(flag, node) {
 						resizeBox.call(_this, flag, node);
-						toggleExtendRestore.call(_this);
+						if (!_this.options.staticBox) {
+							toggleExtendRestore.call(_this);
+						}
 						if (_this.options.onBoxSizeChange) {
 							_this.options.onBoxSizeChange.call();
+						}
+					},
+
+					onActivate : function(node) {
+						if (_this.options.onSelectElement && !node.hasChildren()) {
+							_this.options.onSelectElement.call(this, node);
 						}
 					}
 				});
@@ -36,47 +46,53 @@
 					preventDefaultScroll : false
 				});
 
-				// primary open/close group handler
-				$(_this.primaryHandler).click(function() {
-					_this.toggleBox();
-				});
+				if (!this.options.staticBox) {
+					// primary open/close group handler
+					$(_this.primaryHandler).click(function() {
+						_this.toggleBox();
+					});
 
-				// footer open/close button handler
+					// footer open/close button handler
+					$(_this.secondaryHandler).click(function() {
+						// click to primary box handler
+						_this.primaryHandler.click();
+					});
+					// footer extend/restore handler
+					$(this.boxSizeHandler).click(function() {
+						resizeBoxOnExtendRestore.call(_this);
+						toggleExtendRestore.call(_this);
 
-				$(_this.secondaryHandler).click(function() {
-					// click to primary box handler
-					_this.primaryHandler.click();
-				});
-
-				// footer extend/restore handler
-				$(this.boxSizeHandler).click(function() {
-					_this.resizeBoxOnExtendRestore();
-					toggleExtendRestore.call(_this);
-
-					if (_this.options.onBoxSizeChange) {
-						_this.options.onBoxSizeChange.call();
-					}
-				});
+						if (_this.options.onBoxSizeChange) {
+							_this.options.onBoxSizeChange.call();
+						}
+					});
+				}
 			};
 
 			GroupBox.prototype = {
 				toggleBox : function() {
 					var targetObject = this.contentHolder;
 
-					if (this.isOpened()) {
+					if (isOpened.call(this)) {
 						dehighlightBox.call(this);
 						toggleAllNodes.call(this, false);
 						targetObject.height('auto');
 						targetObject.customScrollbar("resize");
+						//reset scroll to top. TODO does not work ok.  need to look into to make it work correctly.
+						//targetObject.customScrollbar('scrollTo', this.root.find('.dynatree-container').find('li:first'));
 						targetObject.slideUp();
 					} else {
 						targetObject.slideDown();
-						targetObject.height(this.minimumGroupHeight());
+						targetObject.height(minimumGroupHeight.call(this));
 						targetObject.customScrollbar("resize");
 						highlightBox.call(this);
+						loadAvailability.call(this);
 					}
 
-					toggleExtendRestore.call(this);
+					if (!this.options.staticBox) {
+						// not a static box, update the extend/restore button
+						toggleExtendRestore.call(this);
+					}
 
 					// invoke callbacks
 					// update global open/close button
@@ -89,40 +105,29 @@
 					}
 				},
 
-				resizeBoxOnExtendRestore : function() {
-					var newHeight;
-					if (this.boxSizeHandler.hasClass('extendEnabled')) {
-						// increase size
-						newHeight = this.maximumGroupHeight();
-					} else if (this.boxSizeHandler.hasClass('restoreEnabled')) {
-						// decrease size
-						newHeight = this.minimumGroupHeight();
-					}
-					this.contentHolder.height(newHeight);
-					$(this.contentHolder).customScrollbar("resize");
-				},
-
-				openMaximized : function() {
+				openExpanded : function() {
 					// open box
-					if (!this.isOpened()) {
+					if (!isOpened.call(this)) {
 						this.contentHolder.slideDown();
 					}
 
 					// expand all tree nodes
 					toggleAllNodes.call(this, true);
 
-					if (!this.isOpened()) {
+					if (!isOpened.call(this)) {
 						// set box height
-						this.contentHolder.height(this.minimumGroupHeight());
+						this.contentHolder.height(minimumGroupHeight.call(this));
 						// resize the scrollbar
 						$(this.contentHolder).customScrollbar("resize");
+						// load availability data for unopened boxes
+						loadAvailability.call(this);
 					}
 					// add restore/extend icon
 					highlightBox.call(this);
 					toggleExtendRestore.call(this);
 				},
 
-				closeMinimized : function() {
+				closeRestored : function() {
 					// remove restore/extend icon
 					dehighlightBox.call(this);
 					// collapse all tree nodes
@@ -145,7 +150,7 @@
 					 * 4. change global restore/extend icon
 					 */
 					if (this.boxSizeHandler.hasClass('extendEnabled')) {
-						this.resizeBoxOnExtendRestore();
+						resizeBoxOnExtendRestore.call(this);
 						toggleExtendRestore.call(this);
 					}
 				},
@@ -159,29 +164,9 @@
 					 * 4. change global restore/extend icon
 					 */
 					if (this.boxSizeHandler.hasClass('restoreEnabled')) {
-						this.resizeBoxOnExtendRestore();
+						resizeBoxOnExtendRestore.call(this);
 						toggleExtendRestore.call(this);
 					}
-				},
-
-				isOpened : function() {
-					return this.root.hasClass('highlight');
-				},
-
-				minimumGroupHeight : function() {
-					var myActualHeight = this.contentHolder.find('.dynatree-container').height() + GroupConstants.HEIGHT_OFFSET;
-					var myHieght = this.options.boxHeight >= myActualHeight ? myActualHeight : this.options.boxHeight;
-					return myHieght;
-				},
-
-				maximumGroupHeight : function() {
-					return this.contentHolder.find('.dynatree-container').height() + GroupConstants.HEIGHT_OFFSET;
-				},
-
-				currentVisibleHeight : function() {
-					var vpHeight = this.contentHolder.find('.viewport').height();
-					var contentHeight = this.maximumGroupHeight();
-					return vpHeight >= contentHeight ? contentHeight : vpHeight;
 				},
 
 				autoOpen : function(elementId, rootGroupId, parentGroupId) {
@@ -192,10 +177,47 @@
 					if (node != null) {
 						// open me
 						this.toggleBox();
-						node.activate();
+						node.getParent().expand(true);
+
+						if (this.options.staticBox) {
+							$(this.root).find('a.expanding-box-action').hide();
+						}
 						this.contentHolder.customScrollbar('scrollTo', this.root.find('i[keyid="' + elementId + '"]').parent());
 					}
 				}
+			};
+
+			function resizeBoxOnExtendRestore() {
+				var newHeight;
+				if (this.boxSizeHandler.hasClass('extendEnabled')) {
+					// increase size
+					newHeight = maximumGroupHeight.call(this);
+				} else if (this.boxSizeHandler.hasClass('restoreEnabled')) {
+					// decrease size
+					newHeight = minimumGroupHeight.call(this);
+				}
+				this.contentHolder.height(newHeight);
+				$(this.contentHolder).customScrollbar("resize");
+			};
+
+			function isOpened() {
+				return this.root.hasClass('highlight');
+			};
+
+			function minimumGroupHeight() {
+				var myActualHeight = this.contentHolder.find('.dynatree-container').height() + GroupConstants.HEIGHT_OFFSET;
+				var myHieght = this.options.boxHeight >= myActualHeight ? myActualHeight : this.options.boxHeight;
+				return myHieght;
+			};
+
+			function maximumGroupHeight() {
+				return this.contentHolder.find('.dynatree-container').height() + GroupConstants.HEIGHT_OFFSET;
+			};
+
+			function currentVisibleHeight() {
+				var vpHeight = this.contentHolder.find('.viewport').height();
+				var contentHeight = maximumGroupHeight.call(this);
+				return vpHeight >= contentHeight ? contentHeight : vpHeight;
 			};
 
 			function highlightBox() {
@@ -209,13 +231,13 @@
 			};
 
 			function toggleExtendRestore() {
-				if (!this.isOpened()) {
+				if (!isOpened.call(this)) {
 					/*
 					 * Hide extend/restore in case of following scenarios:
 					 * 1. box closed
 					 */
 					this.boxSizeHandler.removeClass('restoreEnabled').removeClass('extendEnabled');
-				} else if ((this.currentVisibleHeight() <= this.options.boxHeight && !this.contentHolder.find('.scroll-bar.vertical').is(':visible'))) {
+				} else if ((currentVisibleHeight.call(this) <= this.options.boxHeight && !this.contentHolder.find('.scroll-bar.vertical').is(':visible'))) {
 					//2. height is less than or equal to max allowed and no scrollbars
 					this.boxSizeHandler.removeClass('restoreEnabled').removeClass('extendEnabled');
 				} else if (this.contentHolder.find('.scroll-bar.vertical').is(':visible')) {
@@ -224,7 +246,7 @@
 					 * 1. scrollbar is visible
 					 */
 					this.boxSizeHandler.removeClass('restoreEnabled').addClass('extendEnabled');
-				} else if (this.currentVisibleHeight() > this.options.boxHeight && !this.contentHolder.find('.scroll-bar.vertical').is(':visible')) {
+				} else if (currentVisibleHeight.call(this) > this.options.boxHeight && !this.contentHolder.find('.scroll-bar.vertical').is(':visible')) {
 					/*
 					 * Show restore icon in following scenarios:
 					 * 1. scrollbar is not visible
@@ -257,10 +279,10 @@
 			});
 
 			function resizeBox(flag, node) {
-				var myNewHeight = this.currentVisibleHeight();
+				var myNewHeight = currentVisibleHeight.call(this);
 
 				if (myNewHeight <= this.options.boxHeight) {
-					this.contentHolder.height(this.minimumGroupHeight());
+					this.contentHolder.height(minimumGroupHeight.call(this));
 				} else {
 					this.contentHolder.height(myNewHeight);
 				}
@@ -269,6 +291,14 @@
 
 				if (this.options.onBoxSizeChange) {
 					this.options.onBoxSizeChange.call();
+				}
+			};
+
+			function loadAvailability() {
+				// remove current statuses
+				if (this.options.fetchAvailability) {
+					// fetch availability data
+					// apply availability to elements
 				}
 			}
 
@@ -344,14 +374,23 @@ $(function() {
 			GroupUIOps.updateExtendRestoreState();
 		},
 
-		boxHeight : 200
+		boxHeight : 200,
+
+		onSelectElement : function(eid) {
+			// TODO implement element selection action
+		},
+
+		fetchAvailability : function(data) {
+			// TODO implement availability fetching code
+			// Return availability json to caller
+		}
 	});
 
 	$('button[name="toggle-all-groups"]').click(function() {
 		if ($(this).hasClass(GroupConstants.OPEN_ALL_CLASS)) {
-			$('.expanding-box').groupUI('openMaximized');
+			$('.expanding-box').groupUI('openExpanded');
 		} else if ($(this).hasClass(GroupConstants.CLOSE_ALL_CLASS)) {
-			$('.expanding-box').groupUI('closeMinimized');
+			$('.expanding-box').groupUI('closeRestored');
 		}
 		GroupUIOps.updateOCAllUI();
 		GroupUIOps.updateExtendRestoreState();
@@ -368,3 +407,13 @@ $(function() {
 
 	$('.expanding-box').groupUI('autoOpen', '000000004814');
 });
+
+/*
+ $(function() {
+ $('.expanding-box').groupUI({
+ staticBox : true,
+ boxHeight : 340
+ });
+ $('.expanding-box').groupUI('autoOpen', '000000004814');
+ });*/
+
