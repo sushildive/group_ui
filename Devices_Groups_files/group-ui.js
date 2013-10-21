@@ -78,8 +78,9 @@
 						toggleAllNodes.call(this, false);
 						targetObject.height('auto');
 						targetObject.customScrollbar("resize");
-						//reset scroll to top. TODO does not work ok.  need to look into to make it work correctly.
-						//targetObject.customScrollbar('scrollTo', this.root.find('.dynatree-container').find('li:first'));
+						//reset scroll to top.
+						targetObject.customScrollbar('scrollToY', 0);
+						targetObject.customScrollbar('scrollToX', 0);
 						targetObject.slideUp();
 					} else {
 						targetObject.slideDown();
