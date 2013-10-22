@@ -378,20 +378,20 @@ clear: both;
 }
 .expanding-box-dropdown.scrollbar-container .viewport {
 }
-.element-list-item.available {
+.available {
 	background-image: url(../img/icons/ico_available.gif) !important;
 }
-.element-list-item.notavailable {
+.notavailable {
 	background-image: url(../img/icons/ico_not_available.gif) !important;
 }
-.element-list-item.availablerror {
+.availablerror {
 	background-image: url(../img/icons/ico_availerror.gif) !important;
 }
-.element-list-item.warning { 
+.warning { 
 	background-image: url(../img/icons/ico_warning.gif) !important; 
 	}
 
-.element-list-item .element-status {
+.element-status {
 	background: red;
 	width: 8%;
 	height: 8px;
