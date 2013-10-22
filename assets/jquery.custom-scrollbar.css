@@ -2,6 +2,10 @@
   position: relative;
 }
 
+.scrollable:focus {
+  outline: 0;
+}
+
 .scrollable .viewport {
   position: relative;
   overflow: hidden;
@@ -76,14 +80,16 @@
   bottom:3px;
 }
 
+/* 
 .scrollable.default-skin .scroll-bar.vertical .thumb {
 	
- /* 
+ 
   opacity: 0.4;
   border-radius: 3px;
   -moz-border-radius: 4px;
-  -webkit-border-radius: 4px; */
+  -webkit-border-radius: 4px; 
 }
+*/
 .scrollable.default-skin .scroll-bar.vertical .thumb .end {
 	background: url("../img/layout/scroll-track-bg-end.gif") no-repeat scroll 50% top;
     height: 9px;
