@@ -69,7 +69,14 @@
 				var eleId = '';
 				$('li li[elementid="' + eleId + '"]').parents('ul').css('display', 'block');
 				$('li[elementid="' + eleId + '"]').addClass('element-selected');
-
+				
+				$('.thumb').html('<div class="end"></div>');
+				
+				$('.dynatree-ico-c .dynatree-icon').each(function (){
+						$(this).addClass('available');					
+					});
+				
+				
 			});
 		</script>
 		<script type="text/javascript">

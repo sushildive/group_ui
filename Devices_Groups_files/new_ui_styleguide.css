@@ -143,11 +143,11 @@ clear: both;
 	margin-top: -3px;
 }
 .page-toolbar-item .btn-extend-all {
+	background: url(../img/icons/expand.gif) no-repeat right 0;
 	curspor: pointer !important;
 	padding: 0 20px 0 0;
 	color: #515049;
-	display: none;
-	cursor:pointer;
+	display: none; cursor:pointer;
 	-moz-user-select: -moz-none;-khtml-user-select: none;-webkit-user-select: none;-ms-user-select: none;user-select: none;
 }
 
@@ -562,7 +562,7 @@ clear: both;
 	margin-bottom: -2px;
 }
 .expanding-box-dropdown {
-	overflow: auto;
+	/*overflow: auto; */
 	display: none;
 	text-align: left;
 	background: #fff;

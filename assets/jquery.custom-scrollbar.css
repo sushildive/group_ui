@@ -18,7 +18,9 @@
 .scrollable .scroll-bar.vertical {
   position: absolute;
   right: 0;
+  top:0px;
   height: 100%;
+  z-index:1001;
 }
 
 .scrollable .scroll-bar.horizontal {
@@ -31,7 +33,15 @@
 }
 
 .scrollable .scroll-bar.vertical .thumb {
-  width: 100%;
+  	width: 14px;
+  	background: url("../img/layout/handler.gif") no-repeat scroll center 100%;
+    cursor: pointer;
+    height: 20px;
+    left: -2px;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+
 }
 
 .scrollable .scroll-bar.horizontal .thumb {
@@ -56,23 +66,42 @@
 }
 
 .scrollable.default-skin .scroll-bar.vertical {
-  width: 6px;
+  width: 12px;
+  background: url("../img/layout/scroll-track-bg.gif") repeat-y scroll 0 0;
 }
 
 .scrollable.default-skin .scroll-bar.horizontal {
-  height: 6px;
+  height: 9px;
+  background: url("../img/layout/scroll-track-bg_h.gif") repeat-x scroll 100% 0;
+  bottom:3px;
 }
 
-.scrollable.default-skin .scroll-bar .thumb {
-  background-color: black;
+.scrollable.default-skin .scroll-bar.vertical .thumb {
+	
+ /* 
   opacity: 0.4;
   border-radius: 3px;
   -moz-border-radius: 4px;
-  -webkit-border-radius: 4px;
+  -webkit-border-radius: 4px; */
+}
+.scrollable.default-skin .scroll-bar.vertical .thumb .end {
+	background: url("../img/layout/scroll-track-bg-end.gif") no-repeat scroll 50% top;
+    height: 9px;
+    overflow: hidden;
+    width: 15px;
+}
+
+.scrollable.default-skin .scroll-bar.horizontal .thumb {
+	background: url("../img/layout/handler_h.gif") repeat-x scroll 100% 50%;
+}
+.scrollable.default-skin .scroll-bar.horizontal .thumb .end {
+	background: url("../img/layout/scroll-track-bg-end_h.gif") no-repeat scroll 0 50%;
+	height:9px;
+	width:5px;
 }
 
 .scrollable.default-skin .scroll-bar:hover .thumb {
-  opacity: 0.6;
+  /* opacity: 0.6; */
 }
 
 /*Gray skin*/
@@ -155,3 +184,4 @@
   height: 10px;
   margin-top: 2px;
 }
+.dynatree-icon { background-image:url(img/icons/loading_fff_small.gif)!important; }
