@@ -21,6 +21,11 @@
 				this.boxSizeHandler = $(this.root).find('.extend-box-action');
 				this.root.data('groupBox', this);
 				var _this = this;
+
+				if (_this.options.staticBox) {
+					// in case of static box, do not show footer part
+					_this.root.find('.expanding-box-footer').hide();
+				}
 				// init dynatree
 				$(_this.contentHolder).dynatree({
 					onExpand : function(flag, node) {
@@ -45,27 +50,25 @@
 					preventDefaultScroll : false
 				});
 
-				if (!this.options.staticBox) {
-					// primary open/close group handler
-					$(_this.primaryHandler).click(function() {
-						_this.toggleBox();
-					});
+				// primary open/close group handler
+				$(_this.primaryHandler).click(function() {
+					_this.toggleBox();
+				});
 
-					// footer open/close button handler
-					$(_this.secondaryHandler).click(function() {
-						// click to primary box handler
-						_this.primaryHandler.click();
-					});
-					// footer extend/restore handler
-					$(this.boxSizeHandler).click(function() {
-						resizeBoxOnExtendRestore.call(_this);
-						toggleExtendRestore.call(_this);
+				// footer open/close button handler
+				$(_this.secondaryHandler).click(function() {
+					// click to primary box handler
+					_this.primaryHandler.click();
+				});
+				// footer extend/restore handler
+				$(this.boxSizeHandler).click(function() {
+					resizeBoxOnExtendRestore.call(_this);
+					toggleExtendRestore.call(_this);
 
-						if (_this.options.onBoxSizeChange) {
-							_this.options.onBoxSizeChange.call();
-						}
-					});
-				}
+					if (_this.options.onBoxSizeChange) {
+						_this.options.onBoxSizeChange.call();
+					}
+				});
 			};
 
 			GroupBox.prototype = {
@@ -178,10 +181,6 @@
 						// open me
 						this.toggleBox();
 						node.getParent().expand(true);
-
-						if (this.options.staticBox) {
-							$(this.root).find('a.expanding-box-action').hide();
-						}
 						this.contentHolder.customScrollbar('scrollTo', this.root.find('i[keyid="' + elementId + '"]').parent());
 					}
 				}
@@ -408,12 +407,10 @@ $(function() {
 	$('.expanding-box').groupUI('autoOpen', '000000004814');
 });
 
-/*
- $(function() {
+/*$(function() {
  $('.expanding-box').groupUI({
  staticBox : true,
  boxHeight : 340
  });
  $('.expanding-box').groupUI('autoOpen', '000000004814');
  });*/
-
