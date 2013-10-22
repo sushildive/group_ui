@@ -298,10 +298,21 @@
 				if (this.options.fetchAvailability) {
 					// fetch availability data
 					// apply availability to elements
+					var grpId = $(this.primaryHandler).attr('groupid');
+					this.options.fetchAvailability.call(this, grpId, responseHandlerCB, errorHandler);
 				}
 			}
 
 		};
+		
+		function responseHandlerCB (data) {
+			//alert('rahul');
+		};
+		
+		function errorHandler(data) {
+			//alert('dravid');
+			$('.dynatree-icon').removeClass ("notavailable").removeClass ("available").removeClass ("loading-ele-availability").addClass ( "availablerror" );
+		}
 
 	}(jQuery));
 /**

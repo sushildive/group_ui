@@ -10,13 +10,29 @@ $(function() {
 
 		boxHeight : 200,
 
-		onSelectElement : function(eid) {
+		onSelectElement : function(eid, node) {
 			// TODO implement element selection action
+			alert('onSelectElement>>' + node);
 		},
 
-		fetchAvailability : function(data) {
+		fetchAvailability : function(grpId, responseHandlerCB, errorHandler) {
 			// TODO implement availability fetching code
 			// Return availability json to caller
+			var _CONTEXT_ROOT = 'http://localhost:8080/reporting-portal';
+			var URI = _CONTEXT_ROOT + "/fetchServiceStatus.action?" + 'groupId=' + grpId + "&auth_token=johns_token" + "&rnd=" + new Date().getTime();
+			//'file:///D:/Projects/group_ui/group.response.json'
+			var _this = this;
+			$.ajax({
+				url: URI,
+				dataType: "json",
+				type : "GET",
+				success : function(data) {
+					responseHandlerCB.call(_this, data);
+				},
+				error : function(data, jqXHR, exception) {
+					errorHandler.call(_this, data);
+				}
+			});
 		}
 	});
 
@@ -39,7 +55,7 @@ $(function() {
 		GroupUIOps.updateExtendRestoreState();
 	});
 
-	$('.expanding-box').groupUI('autoOpen', '000000004814');
+	//$('.expanding-box').groupUI('autoOpen', '000000004814');
 });
 
 /*$(function() {

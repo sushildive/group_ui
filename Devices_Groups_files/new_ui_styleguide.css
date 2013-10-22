@@ -378,6 +378,9 @@ clear: both;
 }
 .expanding-box-dropdown.scrollbar-container .viewport {
 }
+.loading-ele-availability {
+	background-image: url(../img/icons/loading_fff_small.gif) !important;
+}
 .available {
 	background-image: url(../img/icons/ico_available.gif) !important;
 }
